@@ -10,17 +10,24 @@ export default function ChatBotPage() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setLoading(true);
-
-
-      setTimeout(() => {
-        setResponse({
-          prompt,
-          reply: "This is a mock AI response to your prompt.",
-          timestamp: new Date().toISOString()
+    
+      try {
+        const res = await fetch('http://localhost:8080/api/v1/chat/message', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt })
         });
+    
+        const data = await res.json();
+        setResponse(data);
+      } catch (error) {
+        console.error("Error fetching AI response:", error);
+      } finally {
         setLoading(false);
-      }, 1000);
-    };
+      }
+    };    
     return (
          <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-6 rounded-2xl shadow-md w-full max-w-2xl">
